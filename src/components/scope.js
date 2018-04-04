@@ -1,9 +1,15 @@
+import qlik from 'qlik';
+
 export default ($scope) => {
 	//detect data changes
-	console.log('scope call test', $scope);
-	$scope.timerVars = {
-		running: false,
+	// console.log('scope call test', $scope, qlik.currApp().selectionState( ).selections);
+	$scope.state = {
+
 	};
+
+	if (!$scope.state.selectionState) {
+		$scope.state.selectionState = qlik.currApp().selectionState( ).selections;
+	}
 
 	//////////////////////////////////////////////
 	// Create helper function for array equality /
@@ -24,6 +30,33 @@ export default ($scope) => {
 		}
 		return true;
 	};
+
+	$scope.component.model.Validated.bind( function () {
+		var newSelectionState = qlik.currApp().selectionState( ).selections;
+		
+		var selectionChangeFlag = $scope.arraysEqual($scope.state.selectionState, newSelectionState);
+
+		if (selectionChangeFlag) {
+			console.log('new selection state', newSelectionState);
+		}
+
+		console.info( 'Validated', $scope.$parent.layout.fieldTrigger);
+		
+	} );
+
+	// get selection state
+
+	// store selection state to scope
+
+	// measure current selection state against stored selection state
+
+	// IF - user changed field AND field was tagged for changes
+	// DO whatever user asked
+
+	// store updated state to scope
+
+	
+
 	//$scope.backendApi.selectValues();
 
 	// $scope.dataArr = $scope.layout.qListObject.qDataPages[0].qMatrix;

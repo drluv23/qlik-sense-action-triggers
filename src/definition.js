@@ -2,23 +2,33 @@ export const definition = {
 	type : 'items',
 	component : 'accordion',
 	items: {
-		settings: {
-			uses: 'settings',
+		MyList: {
+			type: 'array',
+			ref: 'fieldTrigger',
+			label: 'Action Triggers',
+			itemTitleRef: 'label',
+			allowAdd: true,
+			allowRemove: true,
+			addTranslation: 'Add Trigger',
 			items: {
-				MyList: {
-					type: 'array',
-					ref: 'listItemArr',
-					label: 'Action Triggers',
-					itemTitleRef: 'label',
-					allowAdd: true,
-					allowRemove: true,
-					addTranslation: 'Add Trigger',
+				dimension: {
+					type: 'items',
+					label: 'Dimensions',
+					ref: 'qListObjectDef',
+					min: 1,
 					items: {
+						label: {
+							type: 'string',
+							ref: 'qListObjectDef.qDef.qFieldLabels.0',
+							label: 'Label',
+							show: true,
+						},
 						sourceField: {
 							type: 'string',
-							ref: 'fieldTrigger.sourceField',
+							ref: 'qListObjectDef.qDef.qFieldDefs.0',
 							label: 'Target Field',
-							expression: 'optional',
+							expressionType: 'dimension',
+							expression: 'always',
 						},
 						typeDropdown: {
 							type: 'string',
@@ -63,12 +73,91 @@ export const definition = {
 							label: 'Search String',
 							expression: 'optional',
 						},
+						// field: {
+						// 	type: 'string',
+						// 	expression: 'always',
+						// 	expressionType: 'dimension',
+						// 	ref: 'qListObjectDef.qDef.qFieldDefs.0',
+						// 	label: 'Field',
+						// },
 					},
 				},
 			},
 		},
 	},
 };
+
+// export const definition = {
+// 	type : 'items',
+// 	component : 'accordion',
+// 	items: {
+// 		settings: {
+// 			uses: 'settings',
+// 			items: {
+// 				MyList: {
+// 					type: 'array',
+// 					ref: 'listItemArr',
+// 					label: 'Action Triggers',
+// 					itemTitleRef: 'label',
+// 					allowAdd: true,
+// 					allowRemove: true,
+// 					addTranslation: 'Add Trigger',
+// 					items: {
+// 						sourceField: {
+// 							type: 'string',
+// 							ref: 'fieldTrigger.sourceField',
+// 							label: 'Target Field',
+// 							expression: 'optional',
+// 						},
+// 						typeDropdown: {
+// 							type: 'string',
+// 							component: 'dropdown',
+// 							label: 'Type',
+// 							ref: 'fieldTrigger.eventType',
+// 							options: [{
+// 								value: 'select',
+// 								label: 'OnSelect',
+// 							}, {
+// 								value: 'change',
+// 								label: 'OnChange',
+// 							}],
+// 							defaultValue: 'select',
+// 						},
+// 						actionDropdown: {
+// 							type: 'string',
+// 							component: 'dropdown',
+// 							label: 'Type',
+// 							ref: 'fieldTrigger.actionType',
+// 							options: [{
+// 								value: 'selectField',
+// 								label: 'Select in Field',
+// 							}, {
+// 								value: 'selectExcluded',
+// 								label: 'Select Excluded',
+// 							}, {
+// 								value: 'selectPossible',
+// 								label: 'Select Possible',
+// 							}],
+// 							defaultValue: 'selectField',
+// 						},
+// 						targetField: {
+// 							type: 'string',
+// 							ref: 'fieldTrigger.targetField',
+// 							label: 'Target Field',
+// 							expression: 'optional',
+// 						},
+// 						targetFieldSearchString: {
+// 							type: 'string',
+// 							ref: 'fieldTrigger.targetFieldSearchString',
+// 							label: 'Search String',
+// 							expression: 'optional',
+// 						},
+// 					},
+// 				},
+// 			},
+// 		},
+// 	},
+// };
 
 // export const definition = {
 // 	type: 'items',

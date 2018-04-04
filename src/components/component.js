@@ -7,16 +7,7 @@ export default ($element, layout, app_this) => {
 
 	console.log('currapp', qlik.currApp().selectionState( ).selections);
 
-	// get selection state
 
-	// store selection state to scope
-
-	// measure current selection state against stored selection state
-
-	// IF - user changed field AND field was tagged for changes
-	// DO whatever user asked
-
-	// store updated state to scope
 
 	// const name = layout.qListObject.qDataPages[0].qMatrix[3][0].qText;
 
