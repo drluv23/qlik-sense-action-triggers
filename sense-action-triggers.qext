@@ -1,0 +1,8 @@
+{
+  "name" : "sense-action-triggers",
+  "description" : "Paginate",
+  "icon" : "extension",
+  "type" : "visualization",
+  "version": "0.1",
+  "author": "mcgovey"
+}
