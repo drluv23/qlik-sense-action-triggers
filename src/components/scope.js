@@ -10,6 +10,8 @@ export default ($scope) => {
 
 	// console.log('selection state check', $scope.state.selectionState);
 
+	// ![Usage](https://github.com/alner/ExtensionTemplate/blob/master/doc/usage.gif?raw=true)
+
 	// Functions
 
 	$scope.createSelectionObj = function ( selections ) {

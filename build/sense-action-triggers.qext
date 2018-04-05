@@ -1,0 +1,8 @@
+{
+  "name" : "Field Action Triggers",
+  "description" : "Extension to set field watchers that will trigger events",
+  "icon" : "extension",
+  "type" : "visualization",
+  "version": "0.1",
+  "author": "mcgovey"
+}
