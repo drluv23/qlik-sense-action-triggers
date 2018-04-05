@@ -38,10 +38,12 @@ export const definition = {
 							options: [{
 								value: 'select',
 								label: 'OnSelect',
-							}, {
-								value: 'change',
-								label: 'OnChange',
-							}],
+							},
+							// {
+							// 	value: 'change',
+							// 	label: 'OnChange',
+							// }
+							],
 							defaultValue: 'select',
 						},
 						actionDropdown: {
@@ -58,12 +60,22 @@ export const definition = {
 							}, {
 								value: 'selectPossible',
 								label: 'Select Possible',
+							},{
+								value: 'clearField',
+								label: 'Clear Field',
+							}, {
+								value: 'lockField',
+								label: 'Lock Field',
+							}, {
+								value: 'unlockField',
+								label: 'Unlock Field',
 							}],
 							defaultValue: 'selectField',
 						},
 						targetField: {
 							type: 'string',
 							ref: 'fieldTrigger.targetField',
+							expressionType: 'dimension',
 							label: 'Target Field',
 							expression: 'optional',
 						},
@@ -72,6 +84,9 @@ export const definition = {
 							ref: 'fieldTrigger.targetFieldSearchString',
 							label: 'Search String',
 							expression: 'optional',
+							show: function (x) {
+								return x.fieldTrigger.actionType === 'selectField';
+							},
 						},
 						// field: {
 						// 	type: 'string',

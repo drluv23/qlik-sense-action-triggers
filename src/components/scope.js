@@ -4,9 +4,11 @@ export default ($scope) => {
 	// Initialization code
 	$scope.state = {
 		triggers: [],
+		selectionHashes: {},
+		programmicChangeFlag: false,
 	};
 
-	console.log('selection state check', $scope.state.selectionState);
+	// console.log('selection state check', $scope.state.selectionState);
 
 	// Functions
 
@@ -23,21 +25,6 @@ export default ($scope) => {
 	// Create helper function for array equality /
 	//////////////////////////////////////////////
 	$scope.arraysEqual = function (x, y) {
-		// if (a === b) return true;
-		// if (a == null || b == null) return false;
-		// if (a.length != b.length) return false;
-  
-		// for (var i = 0; i < a.length; ++i) {
-		// 	//if nested array - recurse the value
-		// 	if (a[i] instanceof Array && b[i] instanceof Array) {
-		// 		$scope.arraysEqual(a[i], b[i]);
-		// 	}
-		// 	else if (a[i] !== b[i]) {
-		// 		return false;
-		// 	}
-		// }
-		// return true;
-		
 		'use strict';
 
 		if (x === null || x === undefined || y === null || y === undefined) { return x === y; }
@@ -63,7 +50,7 @@ export default ($scope) => {
 			p.every(function (i) { return $scope.arraysEqual(x[i], y[i]); });
 	};
 
-	$scope.hashCode = function( val ) {
+	$scope.createHash = function( val ) {
 		var hash = 0;
 		if (val.length == 0) {
 			return hash;
@@ -75,48 +62,151 @@ export default ($scope) => {
 		}
 		return hash;
 	};
+
+	$scope.createFieldTriggerMap = function ( fieldTriggers ) {
+
+		// clear trigger array in case triggers were removed
+		$scope.state.triggers = [];
+
+		// loop through each field trigger and create a clean record
+		fieldTriggers.map((trigger) => {
+			$scope.state.triggers.push({
+				field: trigger.qListObject.qDimensionInfo.qGroupFieldDefs[0],
+				actionType: trigger.fieldTrigger.actionType,
+				eventType: trigger.fieldTrigger.eventType,
+				targetField: trigger.fieldTrigger.targetField,
+				targetFieldSearchString: trigger.fieldTrigger.targetFieldSearchString,
+				triggerFired: false,
+			});
+	
+		});
+		// console.log('final hashes', $scope.state.triggers);
+	};
+
+	$scope.diffArrays = function (hashArray, diffArray) {
+		// hash newest selections
+		// console.log('hashArray', hashArray, 'diffArray', diffArray);
+		$scope.state.selectionHashes = {};
+		hashArray.map((currSelection) => {
+			$scope.state.selectionHashes[(currSelection.field + '|' + currSelection.selected)] = currSelection;
+		});
+
+		diffArray.filter(function(prevSelection) {
+			return !$scope.state.selectionHashes[(prevSelection.field + '|' + prevSelection.selected)];
+		});
+
+		// console.log('not found selections', diffArray);
+		return diffArray;
+		// diffArray.map((prevSelection) => {
+		// 	console.log('prev sel hashes', $scope.state.selectionHashes[($scope.createHash(prevSelection.field + '|' + prevSelection.selected))], prevSelection);
+		// 	if (!$scope.state.selectionHashes[($scope.createHash(prevSelection.field + '|' + prevSelection.selected))]) {
+				
+		// 		return prevSelection;
+		// 	}
+		// });
+
+		// console.log('hash table', $scope.state.selectionHashes);
+	};
+
+	$scope.runTrigger = function ( trigger, context ) {
+		console.log('trigger called', trigger, context);
+
+		$scope.state.selectionState.selections.map((sel) => {
+			console.log('selections', sel);
+		});
+
+		switch (trigger.actionType) {
+		case 'selectField':
+			console.log('selection');
+			$scope.state.programmicChangeFlag = true;
+			qlik.currApp().field(trigger.targetField).selectValues([{qText: trigger.targetFieldSearchString}], true, true);
+			break;
+		case 'selectExcluded':
+			$scope.state.programmicChangeFlag = true;
+			qlik.currApp().field(trigger.targetField).selectExcluded();
+			break;
+		case 'selectPossible':
+			console.log('selection pos');
+			$scope.state.programmicChangeFlag = true;
+			qlik.currApp().field(trigger.targetField).selectExcluded();
+			break;
+		case 'clearField':
+			$scope.state.programmicChangeFlag = true;
+			qlik.currApp().field(trigger.targetField).clear();
+			break;
+		case 'lockField':
+			$scope.state.programmicChangeFlag = true;
+			qlik.currApp().field(trigger.targetField).lock();
+			break;
+		case 'unlockField':
+			$scope.state.programmicChangeFlag = true;
+			qlik.currApp().field(trigger.targetField).unlock();
+			break;
+		default:
+			console.log('nobody home on these triggers');
+			break;
+		}
+	};
 	// $scope.component.model.Invalidated.bind( function () {
 	// 	console.info( 'Invalidated' );
 	// 	$scope.state.prevSelectionState = $scope.state.selectionState;
 	// } );
 	$scope.selectionListener = function() {
+		console.log('change type', $scope.state.programmicChangeFlag);
+		if ($scope.state.programmicChangeFlag) {
+			$scope.state.programmicChangeFlag = false;
+			return;
+		}
+		console.log('prog flag after field selection', $scope.state.programmicChangeFlag);
+
 		var newSelections = $scope.createSelectionObj($scope.state.selectionState.selections);
-		console.log('Back count:', $scope.state.selectionState.backCount, 'event', $scope.state.selectionState, 'newObj', newSelections, 'prevObj', $scope.state.selectionObj);
+		console.log('event', $scope.state.selectionState, 'newObj', newSelections, 'prevObj', $scope.state.selectionObj);
+		console.log('scope', $scope);
 
 		// check if new selections and old selections are the same
-		var selectionChangeFlag = $scope.arraysEqual($scope.state.selectionState, newSelections);
-		console.log('status', selectionChangeFlag);
+		var selectionChangeFlag = $scope.arraysEqual($scope.state.selectionObj, newSelections);
+		// console.log('status', selectionChangeFlag);
 
 		
 		// check if selections have changed since last time process was checked
-		if (!selectionChangeFlag) {
-			var fieldTriggers = $scope.$parent.layout.fieldTrigger;
-			console.log($scope.state.triggers);
+		if (selectionChangeFlag===false) {
 
-			// clear trigger array in case triggers were removed
-			$scope.state.triggers = [];
+			$scope.createFieldTriggerMap($scope.$parent.layout.fieldTrigger);
+			console.log($scope.$parent.layout.fieldTrigger);
 
-			// loop through each field trigger
-			fieldTriggers.map((trigger) => {
-				console.log('trigger', trigger);
+			
 
-				$scope.state.triggers.push({
-					field: trigger.qListObject.qDimensionInfo.qGroupFieldDefs[0],
-					actionType: trigger.fieldTrigger.actionType,
-					eventType: trigger.fieldTrigger.eventType,
-					targetField: trigger.fieldTrigger.targetField,
-					targetFieldSearchString: trigger.fieldTrigger.targetFieldSearchString,
-					triggerFired: false,
+			// diff selections to catch newest selection/clea
+			// check counts, if new > old then new selection, if old < new then cleared
+			// if counts equal, loop through new and inner loop through old checking values
+			if ($scope.state.selectionObj.length>newSelections.length) {
+				// selection cleared
+				var clearedSelection = $scope.diffArrays(newSelections, $scope.state.selectionObj);
+				console.log('selection cleared', clearedSelection);
+
+			} else if ($scope.state.selectionObj.length<newSelections.length) {
+				// selection made
+				var madeSelection = $scope.diffArrays($scope.state.selectionObj, newSelections);
+
+				var targetedTrigger = $scope.state.triggers.filter((trigger) => {
+					return trigger.field===madeSelection[0].field;
 				});
-		
-			});
-			console.log('final hashes', $scope.state.triggers);
+
+				console.log('selection made', madeSelection, 'target', targetedTrigger);
+				
+				targetedTrigger.map((indivTrigger) => {
+					$scope.runTrigger(indivTrigger, madeSelection[0].field);
+				});
+			} else if ($scope.arraysEqual($scope.state.selectionObj, newSelections)) {
+				console.log('what are you doing here! these arrays are the same');
+			} else {
+				// check which values were cleared or made
+				var fieldChange = $scope.diffArrays(newSelections, $scope.state.selectionObj);
+				console.log('changes in field', fieldChange);
+			}
 		}
 
-		// diff selections to catch newest selection/clear
-
-		// check counts, if new > old then new selection, if old < new then cleared
-		// if counts equal, loop through new and inner loop through old checking values
+		$scope.state.selectionObj = newSelections;
 
 		// run below for new selection
 
