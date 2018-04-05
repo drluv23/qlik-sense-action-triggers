@@ -1,11 +1,13 @@
-import qlik from 'qlik';
+// import qlik from 'qlik';
 import '../styles/styles.css';
 
 
-export default ($element, layout, app_this) => {
-	console.log('qlik', qlik, 'layout', layout, 'this', app_this);
+export default () => {
 
-	console.log('currapp', qlik.currApp().selectionState( ).selections);
+	// add element and layout back into parameters if you want to use - $element, layout
+	// console.log('layout', layout);
+
+	// console.log('currapp', qlik.currApp().selectionState( ).selections);
 
 
 

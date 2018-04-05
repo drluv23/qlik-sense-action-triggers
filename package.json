@@ -4,7 +4,7 @@
   "description": "Qlik Sense Extension template",
   "main": "index.js",
   "scripts": {
-    "dev": "node_modules/.bin/webpack-dev-server --env.development --env.url=http://localhost:4848/sense/app/C%3A%5CUsers%5Ckevin.mcgovern%5CDocuments%5CQlik%5CSense%5CApps%5CSampleGantt.qvf/sheet/350729c9-e5ad-4d46-8a90-5891e0ac4193/state/edit --env.build_output=C:/Users/kevin.mcgovern/Documents/Qlik/Sense/Extensions/sense-action-triggers --progress",
+    "dev": "node_modules/.bin/webpack-dev-server --env.development --env.url=http://localhost:4848/sense/app/C%3A%5CUsers%5Ckevin.mcgovern%5CDocuments%5CQlik%5CSense%5CApps%5CSampleGantt.qvf/sheet/350729c9-e5ad-4d46-8a90-5891e0ac4193/state/analysis --env.build_output=C:/Users/kevin.mcgovern/Documents/Qlik/Sense/Extensions/sense-action-triggers --progress",
     "build": "webpack -p --env.production --progress --colors",
     "deploy": "webpack -p --env.production --env.deploy_command=deploy.bat --progress --colors"
   },

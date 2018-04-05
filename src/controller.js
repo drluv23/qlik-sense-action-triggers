@@ -2,7 +2,7 @@ import Scope from './components/scope';
 // import template from './components/template.html';
 
 export const controller = ($scope) => {
-	console.log('scoped');
+	// console.log('scoped');
 	Scope($scope);
 
 	// console.log('module', module);
