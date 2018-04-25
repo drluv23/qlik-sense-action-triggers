@@ -1,5 +1,7 @@
 # Qlik Sense Field Action Triggers
 
+This project is in the early stages and is still unstable.  There are likely additional changes coming (for the better).
+
 ## Description
 
 This Qlik Sense extension lets you tie actions to field selections.  Drop this extension on the corner of a sheet and configure it to create one or many actions that are fired when a field is selected.  This project was inspired by the 'Triggers' functionality available in QlikView.
